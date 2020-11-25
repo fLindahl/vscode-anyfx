@@ -1,0 +1,95 @@
+{
+    "name": "vscode-anyfx",
+    "displayName": "AnyFX Linter",
+    "description": "Linting for AnyFX",
+    "version": "0.0.1",
+    "publisher": "flindahl",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/flindahl/vscode-anyfx"
+    },
+    "engines": {
+        "vscode": "^1.29.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Linters"
+    ],
+    "keywords": [
+        "GLSL",
+        "WebGL",
+        "Shader",
+        "Vertex shader",
+        "Fragment shader",
+        "SPIRV",
+        "OpenGL",
+        "Vulkan",
+        "OpenGL Shading Language",
+        "HLSL",
+        "DirectX"
+    ],
+    "icon": "icon.png",
+    "activationEvents": [
+        "onLanguage:glsl"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "languages": [
+            {
+                "id": "glsl",
+                "aliases": [
+                    "GLSL"
+                ],
+                "extensions": [
+                    ".fx",
+                    ".fxh"
+                ]
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "AnyFX configuration",
+            "properties": {
+                "anyfx.anyfxCompilerPath": {
+                    "type": "string",
+                    "default": "anyfxcompiler",
+                    "description": "The path to the anyfx compiler executable"
+                },
+                "anyfx.anyfxCompilerArgs": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Additional arguments for the anyfx compiler executable"
+                },
+                "anyfx.additionalIncludes": {
+                    "type": "array",
+                    "default": [],
+                    "description": "Additional include directories when compiling and linting shaders"
+                },
+                "anyfx.requireSaveToLint": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "By default, linting will occur with every text change. Enable this option to only lint when you save the file."
+                },
+                "anyfx.additionalFileExtensions": {
+                    "type": "array",
+                    "default": [],
+                    "description": "Additional file extensions which should be considered as AnyFX files."
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mocha": "^5.2.7",
+        "@types/node": "^12.12.11",
+        "tslint": "^5.20.1",
+        "typescript": "^3.7.2",
+        "vscode": "^1.1.36"
+    }
+}
