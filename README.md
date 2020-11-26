@@ -12,6 +12,13 @@ Make sure you set the `anyfx.anyfxCompilerPath` setting to a valid compiler.
 - `anyfx.requireSaveToLint`: By default, linting will occur with every text change. Enable this option to only lint when you save the file.
 - `anyfx.additionalFileExtensions`: Additional file extensions which should be considered as AnyFX files.
 
+### Workspace properties
+
+The linter will look for `anyfx_properties.json` in the `.vscode` folder in your workspace root.
+
+Supported properties:
+- `includeDirs`: [paths] - An array of include paths to pass to the compiler.
+
 ### TODO
 * Symbols support!
 
