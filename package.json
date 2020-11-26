@@ -2,7 +2,7 @@
     "name": "vscode-anyfx",
     "displayName": "AnyFX Linter",
     "description": "Linting for AnyFX",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "publisher": "flindahl",
     "repository": {
         "type": "git",
