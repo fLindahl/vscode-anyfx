@@ -79,29 +79,18 @@ export default class AnyFXLintProvider implements vscode.CodeActionProvider {
     this.extensions.concat(additionalFileExtensions);
     this.extensions = this.extensions.filter((value: string, index: number, array: string[]) => array.indexOf(value) === index);
 
-    // Look for {workspaceFolder}/.vscode/anyfx_properties.json and parse the includeDirs
-    vscode.workspace.workspaceFolders.forEach(folder => {
-      // I'm a hack fraud
-      const fs = require('fs');
-      const { join } = require('path');
-      const dir: string = folder.uri.fsPath;
-      fs.readdir(dir, (err, files) => {
-        files.filter(f => fs.statSync(join(dir, f)).isDirectory());
-        files.forEach(subDir => {
-          if (subDir === '.vscode') {
-            const file = dir + "/" + subDir + "/anyfx_properties.json";
-            if (fs.existsSync(file)) {
-              fs.readFile(file, (err, content) => {
-                var data = JSON.parse(content);
-                if ('includeDirs' in data) {
-                  data['includeDirs'].forEach(includeDir => {
-                    if (!(includeDir in this.additionalIncludeDirs)) {
-                      this.additionalIncludeDirs.push(includeDir);
-                    }
-                  });
-                }
-              });
-            }
+    // Look for .vscode/anyfx_properties.json and parse the includeDirs
+    vscode.workspace.findFiles("**/.vscode/anyfx_properties.json").then((uris) => {
+      uris.forEach(uri => {
+        const fs = require('fs');
+        fs.readFile(uri.fsPath, (err, content) => {
+          var data = JSON.parse(content);
+          if ('includeDirs' in data) {
+            data['includeDirs'].forEach(includeDir => {
+              if (!(includeDir in this.additionalIncludeDirs)) {
+                this.additionalIncludeDirs.push(includeDir);
+              }
+            });
           }
         });
       });
@@ -130,8 +119,7 @@ export default class AnyFXLintProvider implements vscode.CodeActionProvider {
       this.documentModified(vscode.window.activeTextEditor.document);
     });
 
-    this.command = vscode.commands.registerCommand(
-      AnyFXLintProvider.commandId, this.runCodeAction, this);
+    this.command = vscode.commands.registerCommand(AnyFXLintProvider.commandId, this.runCodeAction, this);
     subscriptions.push(this);
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
@@ -177,7 +165,9 @@ export default class AnyFXLintProvider implements vscode.CodeActionProvider {
         try {
           this.doLint(textDocument, inputFilename, output);
         }
-        catch (err) { console.log("linting failed:" + err); }
+        catch (err) {
+          console.log("linting failed:" + err);
+        }
         if (this.textChangeLintQueued) {
           let queuedDocuemnt: vscode.TextDocument = this.textChangeLintQueued;
           this.textChangeLintQueued = undefined;
@@ -244,7 +234,9 @@ export default class AnyFXLintProvider implements vscode.CodeActionProvider {
       });
     }
 
-    let options = vscode.workspace.rootPath ? { cwd: vscode.workspace.rootPath + "/client" } :
+    args.push("-q");
+
+    let options = vscode.workspace.rootPath ? { cwd: vscode.workspace.rootPath } :
       undefined;
 
     let anyfxCompilerOutput = '';
